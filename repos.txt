@@ -2,3 +2,4 @@ OSeMOSYS/MUIO
 FINPLAN-Model/FINPLAN-Code
 Model-for-Analysis-of-Energy-Demand/MAED-Code
 carderne/mosox
+OSeMOSYS/otoole
