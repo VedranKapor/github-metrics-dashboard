@@ -1,0 +1,5 @@
+repository,description,topics,default_branch,license,stars,forks,watchers,open_issues,open_prs,closed_prs_last_30,merged_prs_last_30,contributors_total,contributors_active_30_days,last_commit,last_update,latest_release,release_downloads,repo_size_kb
+OSeMOSYS/MUIO,,,master,Apache-2.0,8,8,1,5,2,0,0,4,4,2026-02-03T09:16:15Z,2026-02-03T09:42:41Z,v5.3,1896,164326
+FINPLAN-Model/FINPLAN-Code,,,main,BSD-3-Clause,3,3,0,1,0,0,0,3,0,2025-02-10T17:49:17Z,2025-07-12T10:42:21Z,,0,1835
+Model-for-Analysis-of-Energy-Demand/MAED-Code,Code for MAED,,main,BSD-3-Clause,14,4,1,0,0,0,0,3,0,2025-11-12T12:28:25Z,2025-11-12T12:28:35Z,,0,2758
+carderne/mosox,LP matrix generator for GMPL,,main,MIT,2,0,0,0,0,0,0,1,30,2026-02-02T17:53:36Z,2026-02-02T17:58:11Z,v0.3.1,4,453

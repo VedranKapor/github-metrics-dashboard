@@ -1,0 +1,74 @@
+:root {
+  --dark: #3A3F51;
+  --green: #71A06A;
+  --bg: #F6F8FA;
+  --row-alt: #EEF2F4;
+}
+
+body { background: var(--bg); color: var(--dark); font-family: Arial, sans-serif; margin: 40px; }
+
+table.dataTable thead th {
+  background: var(--dark);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+}
+
+.dataTables_wrapper { overflow-x: auto; }
+
+td.repo-cell a {
+  color: var(--green);
+  font-weight: 700;
+  text-decoration: none;
+}
+td.repo-cell a:hover { text-decoration: underline; }
+
+th.repo-col, td.repo-cell {
+  min-width: 320px;
+  max-width: 520px;
+  white-space: nowrap;
+}
+
+th.desc-col, td.desc-cell {
+  white-space: normal;
+  max-width: 560px;
+}
+
+
+/********
+
+/* Allow wrapping in repo and description columns */
+td.repo-cell, th.repo-col,
+td.desc-cell, th.desc-col {
+    white-space: normal !important;
+    word-break: break-word;
+    max-width: 350px; /* adjust as needed */
+}
+
+/* Make the table horizontally scrollable if needed */
+.dataTables_wrapper {
+    overflow-x: auto;
+}
+
+/* Prevent long strings from pushing layout */
+table.dataTable td {
+    word-break: break-word;
+    white-space: normal;
+}
+
+/* Optional: a little padding for readability */
+table.dataTable tbody td {
+    padding: 8px 12px;
+}
+
+/* Chart container so the chart doesn't grow infinitely */
+.chart-container {
+  position: relative;
+  height: 450px;
+  max-width: 100%;
+  margin-bottom: 40px;
+}
+#metricsChart { width: 100% !important; height: 100% !important; }
+
+/* Buttons toolbar spacing */
+.dt-buttons { margin-bottom: 10px; }

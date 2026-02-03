@@ -1,0 +1,69 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <meta charset='UTF-8'>
+  <title>CCG GitHub Metrics Dashboard</title>
+  <link rel='stylesheet' href='style.css'>
+  <script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
+  <script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
+  <script src='https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js'></script>
+  <link rel='stylesheet' href='https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css'>
+</head>
+<body>
+<h1>CCG GitHub Metrics Dashboard</h1>
+<p>Auto‑updated daily via GitHub Actions</p>
+
+<h2>Repository Metrics Table</h2>
+<table id='metricsTable' class='display'></table>
+
+<h2>Stars & Forks Chart</h2>
+<div class="chart-container">
+    <canvas id="metricsChart"></canvas>
+</div>
+
+<script src='dashboard.js'></script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>CCG GitHub Metrics Dashboard</title>
+
+  <!-- Your styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- DataTables core CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+  <!-- DataTables Buttons CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- DataTables core JS -->
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <!-- DataTables Buttons (for column visibility) -->
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
+
+  <!-- Chart.js (for your chart) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <h1>CCG GitHub Metrics Dashboard</h1>
+  <p>Auto‑updated daily via GitHub Actions</p>
+
+  <h2>Repository Metrics Table</h2>
+  <table id="metricsTable" class="display" style="width:100%"></table>
+
+  <h2>Stars & Forks</h2>
+  <div class="chart-container">
+    <canvas id="metricsChart"></canvas>
+  </div>
+
+  <!-- Your app JS -->
+  <script src="dashboard.js"></script>
+</body>
+</html>
