@@ -158,27 +158,62 @@ $(document).ready(function () {
     // Build DataTable
     const dt = $('#metricsTable').DataTable({
       data: tableData,
+      // columns: headers.map((h, i) => {
+      //   // Assign classes for styling (repo + description special)
+      //   const className =
+      //     i === COL.repository ? 'repo-cell noVis' :
+      //     i === COL.description ? 'desc-cell' : '';
+
+      //   return {
+      //     title: h,
+      //     className,
+      //     render: function (data, type, row) {
+      //       // Render repository as a GitHub link
+      //       if (i === COL.repository) {
+      //         const repo = row[COL.repository] || '';
+      //         const url = `https://github.com/${repo}`;
+      //         return `${url}${repo}</a>`;
+      //       }
+      //       return data;
+      //     }
+      //   };
+      // }),
       columns: headers.map((h, i) => {
-        // Assign classes for styling (repo + description special)
         const className =
-          i === COL.repository ? 'repo-cell noVis' :
-          i === COL.description ? 'desc-cell' : '';
+          i === COL.repository ? 'repo-cell' :
+          i === COL.description ? 'desc-cell' :
+          '';
 
         return {
           title: h,
           className,
           render: function (data, type, row) {
-            // Render repository as a GitHub link
+            // Repository column → clickable link
             if (i === COL.repository) {
-              const repo = row[COL.repository] || '';
-              const url = `https://github.com/${repo}`;
-              return `${url}${repo}</a>`;
+              const repo = (row[COL.repository] || '').trim(); // e.g. "OSeMOSYS/MUIO"
+              if (!repo) return ''; // nothing to render
+
+              // Basic safety: only create link if it looks like "owner/repo"
+              const isOwnerRepo = repo.includes('/') && repo.split('/').length === 2;
+              const url = isOwnerRepo ? `https://github.com/${repo}` : null;
+
+              // When DataTables asks for 'display' render a link; for sort/filter return raw value
+              console.log('Rendering repo column:', repo, 'Link valid:', url, " type:", type)
+              ;
+              if (type === 'display' && url) {
+                console.log('Rendering link for', url, repo, '</a>');
+
+//                 <a href="https://github.com/OSeMOSYS/MUIO" target="_blank" rel="noopener noreferrer">OSeMOSYS/MUIO</a>
+
+                //return `${url}${repo}</a>`;
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer">${repo}</a>`;  
+              }
+              return repo; // for sort/search/export
             }
             return data;
           }
         };
       }),
-
       // Toolbar with Column chooser + preset buttons
       dom: 'Bfrtip',
       buttons: [
@@ -257,13 +292,50 @@ $(document).ready(function () {
     });
 
     // Apply initial visibility AFTER dt exists (fixes "Cannot access 'dt' before initialization")
-    dt.on('init', function () {
-      // Hide everything first (except repo)
-      dt.columns().every(function (idx) {
-        const isRepo = idx === COL.repository;
-        this.visible(isRepo || DEFAULT_VISIBLE.has(idx));
-      });
-    });
+    // dt.on('init', function () {
+    //   // Hide everything first (except repo)
+    //   dt.columns().every(function (idx) {
+    //     const isRepo = idx === COL.repository;
+    //     this.visible(isRepo || DEFAULT_VISIBLE.has(idx));
+    //   });
+    // });
+
+
+
+
+
+    // After DataTable is created:
+const repoColIdx = (typeof COL !== 'undefined' && COL.repository >= 0) ? COL.repository : 0;
+
+console.log('Repository column index:', repoColIdx);
+
+// dt.on('draw', function () {
+//   dt.column(repoColIdx, { page: 'current' }).nodes().each(function (cell) {
+//     const text = (cell.textContent || '').trim(); // e.g., "OSeMOSYS/MUIO"
+        
+//     if (!text) return;
+
+//     // Link only if it looks like "owner/repo"
+//     const ok = text.includes('/') && text.split('/').length === 2;
+
+//     console.log('Updated repo link for', text);
+//     console.log('Link valid:', ok);
+//     if (!ok) return;
+
+//     const url = `https://github.com/${text}`;
+//     // Write the actual <a> tag into the cell
+//     cell.innerHTML = `${url}${text}</a>`;
+
+//   });
+// });
+
+// Force a first pass
+dt.draw(false);
+
+
+
+
+
 
     // ---------- Chart (Stars & Forks) ----------
     const safeNum = (v) => {

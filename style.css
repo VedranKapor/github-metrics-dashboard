@@ -18,7 +18,7 @@ table.dataTable thead th {
 
 td.repo-cell a {
   color: var(--green);
-  font-weight: 700;
+  /* font-weight: 700; */
   text-decoration: none;
 }
 td.repo-cell a:hover { text-decoration: underline; }
@@ -33,6 +33,14 @@ th.desc-col, td.desc-cell {
   white-space: normal;
   max-width: 560px;
 }
+
+
+
+
+
+td.repo-cell a:hover { text-decoration: underline; }
+
+
 
 
 /********
