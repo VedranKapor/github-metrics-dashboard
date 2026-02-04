@@ -1,69 +1,106 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-  <meta charset='UTF-8'>
-  <title>CCG GitHub Metrics Dashboard</title>
-  <link rel='stylesheet' href='style.css'>
-  <script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
-  <script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
-  <script src='https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js'></script>
-  <link rel='stylesheet' href='https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css'>
-</head>
-<body>
-<h1>CCG GitHub Metrics Dashboard</h1>
-<p>Auto‑updated daily via GitHub Actions</p>
-
-<h2>Repository Metrics Table</h2>
-<table id='metricsTable' class='display'></table>
-
-<h2>Stars & Forks Chart</h2>
-<div class="chart-container">
-    <canvas id="metricsChart"></canvas>
-</div>
-
-<script src='dashboard.js'></script>
-</body>
-</html> -->
-
 <!DOCTYPE html>
-<html>
+<html lang="bs">
 <head>
   <meta charset="UTF-8" />
-  <title>CCG GitHub Metrics Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CCG GitHub Metrics — Dashboard</title>
 
-  <!-- Your styles -->
-  <link rel="stylesheet" href="style.css" />
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-  <!-- DataTables core CSS -->
+  <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
-  <!-- DataTables Buttons CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
 
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- DataTables core JS -->
-  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-  <!-- DataTables Buttons (for column visibility) -->
-  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
-
-  <!-- Chart.js (for your chart) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Theme CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo">CCG</div>
+      <div class="titles">
+        <h1>GitHub Metrics</h1>
+        <p class="subtitle">Climate Compatible Growth</p>
+      </div>
+    </div>
 
-  <h1>CCG GitHub Metrics Dashboard</h1>
-  <p>Auto‑updated daily via GitHub Actions</p>
+    <div class="toolbar" id="toolbar">
+      <div class="actions"></div>
+      <button id="themeToggle" class="btn btn-ghost" title="Tamni/Svijetli režim" aria-label="Toggle theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+    </div>
+  </header>
 
-  <h2>Repository Metrics Table</h2>
-  <table id="metricsTable" class="display" style="width:100%"></table>
+  <!-- Content -->
+  <main class="container">
+    <!-- KPI cards -->
+    <section class="cards kpi-row">
+      <div class="card kpi">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fa-solid fa-star" style="color:#f0c419"></i> Total starts</h2>
+        </div>
+        <div class="card-body">
+          <div id="kpiStars" class="kpi-value">—</div>
+        </div>
+      </div>
+      <div class="card kpi">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fa-solid fa-code-branch" style="color:#71A06A"></i> Total forks</h2>
+        </div>
+        <div class="card-body">
+          <div id="kpiForks" class="kpi-value">—</div>
+        </div>
+      </div>
+      <div class="card kpi">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fa-solid fa-box" style="color:#3A3F51"></i> Total repos</h2>
+        </div>
+        <div class="card-body">
+          <div id="kpiRepos" class="kpi-value">—</div>
+        </div>
+      </div>
+    </section>
 
-  <h2>Stars & Forks</h2>
-  <div class="chart-container">
-    <canvas id="metricsChart"></canvas>
-  </div>
+    <!-- Table card -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title"><i class="fa-solid fa-table"></i> Metrics view</h2>
+      </div>
+      <div class="card-body">
+        <div class="table-wrapper">
+          <table id="metricsTable" class="display compact" style="width:100%"></table>
+        </div>
+      </div>
+    </section>
 
-  <!-- Your app JS -->
-  <script src="dashboard.js"></script>
+    <!-- Chart card -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title"><i class="fa-solid fa-chart-column"></i> Stars & Forks</h2>
+      </div>
+      <div class="card-body">
+        <div class="chart-container">
+          <canvas id="metricsChart"></canvas>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Vendor JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
+  <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+  <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- App JS -->
+  <script src="dashboard.js?v=a2-final"></script>
 </body>
 </html>

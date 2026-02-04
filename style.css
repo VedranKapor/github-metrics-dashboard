@@ -1,82 +1,131 @@
+/* =============== SmartAdmin A2 (Clean + Brand Wow) =============== */
 :root {
   --dark: #3A3F51;
   --green: #71A06A;
-  --bg: #F6F8FA;
-  --row-alt: #EEF2F4;
+  --bg: #f5f7f9;
+  --card: #ffffff;
+  --text: #2b2f3a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
 }
-
-body { background: var(--bg); color: var(--dark); font-family: Arial, sans-serif; margin: 40px; }
-
-table.dataTable thead th {
-  background: var(--dark);
-  color: #fff;
-  font-weight: 600;
-  border: none;
+[data-theme="dark"] {
+  --bg: #141821;
+  --card: #1c2535;
+  --text: #e5e7eb;
+  --muted: #a0a8b6;
+  --border: #2a3244;
 }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
 
-.dataTables_wrapper { overflow-x: auto; }
-
-td.repo-cell a {
-  color: var(--green);
-  /* font-weight: 700; */
-  text-decoration: none;
+/* Header */
+.app-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px; color: #fff;
+  background: linear-gradient(115deg, var(--dark) 0%, #2f3445 100%);
+  position: sticky; top: 0; z-index: 50; box-shadow: 0 8px 18px rgba(0,0,0,.12);
 }
+.app-header .brand { display: flex; align-items: center; gap: 14px; }
+.logo { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--green), #4f7f58); display: flex; align-items: center; justify-content: center; font-weight: 500; color: #0f1a14; }
+.titles h1 { margin: 0; font-size: 20px; font-weight: 500; letter-spacing: .2px; }
+.subtitle { margin: 2px 0 0; color: #d5dfd8; font-size: 12px; }
+.toolbar { display: flex; align-items: center; gap: 10px; }
+.btn { border: 1px solid rgba(255,255,255,.25); color: #fff; background: transparent; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+.btn:hover { background: rgba(255,255,255,.1); }
+.btn-ghost { background: transparent; }
+
+/* Container */
+.container { max-width: 90%; margin: 24px auto; padding: 0 16px; }
+
+/* Cards */
+.cards { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px;  }
+.card { grid-column: span 12; background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom:10px;  box-shadow: 0 6px 18px rgba(0,0,0,.06); overflow: hidden; }
+.card-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.card-title { margin: 0; font-size: 16px; font-weight: 500; color: var(--dark); }
+.card-body { padding-left: 15px; }
+@media (min-width: 640px) { .kpi-row .kpi { grid-column: span 6; } }
+@media (min-width: 1024px) { .kpi-row .kpi { grid-column: span 4; } }
+.kpi .kpi-title { color: var(--muted); font-size: 12px; letter-spacing: .02em; text-transform: uppercase; }
+.kpi .kpi-value { margin-top: 3px; font-size: 18px; font-weight: 500; color: var(--text); text-align: center; }
+
+/* Table */
+.table-wrapper { overflow-x: auto; }
+table.dataTable thead th { background: var(--dark); color: #fff; border: none; font-weight: 500; }
+.dataTables_wrapper .dataTables_paginate .paginate_button.current { background: var(--green); color: #0f1a14 !important; border-radius: 6px; }
+
+/* Fixed header/columns helpers */
+.dtfh-floatingparent, .dtfh-floatingparent-head { z-index: 20 !important; }
+.dtfc-fixed-left { background: var(--card); box-shadow: 6px 0 10px rgba(0,0,0,.06); }
+
+/* Repo/Desc columns */
+td.repo-cell a { color: var(--green); font-weight: 400; text-decoration: none; }
 td.repo-cell a:hover { text-decoration: underline; }
+td.repo-cell, th.repo-col, td.desc-cell, th.desc-col { white-space: normal !important; word-break: break-word; max-width: 520px; }
 
-th.repo-col, td.repo-cell {
-  min-width: 320px;
-  max-width: 520px;
-  white-space: nowrap;
-}
+/* Badges */
+.badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid var(--border); background: #f7faf9; color: #2b3a30; }
+.badge .fa { opacity: .9; }
+.badge.license { background: #eef2ff; color: #2b3553; }
+.badge.topic { background: #e9f7ee; color: #184d2d; }
 
-th.desc-col, td.desc-cell {
-  white-space: normal;
-  max-width: 560px;
-}
+/* Chart */
+.chart-container { position: relative; height: 420px; max-width: 100%; }
 
-
-
-
-
-td.repo-cell a:hover { text-decoration: underline; }
-
-
-
-
-/********
-
-/* Allow wrapping in repo and description columns */
-td.repo-cell, th.repo-col,
-td.desc-cell, th.desc-col {
-    white-space: normal !important;
-    word-break: break-word;
-    max-width: 350px; /* adjust as needed */
-}
-
-/* Make the table horizontally scrollable if needed */
-.dataTables_wrapper {
-    overflow-x: auto;
-}
-
-/* Prevent long strings from pushing layout */
-table.dataTable td {
-    word-break: break-word;
-    white-space: normal;
-}
-
-/* Optional: a little padding for readability */
-table.dataTable tbody td {
-    padding: 8px 12px;
-}
-
-/* Chart container so the chart doesn't grow infinitely */
-.chart-container {
-  position: relative;
-  height: 450px;
-  max-width: 100%;
-  margin-bottom: 40px;
-}
-#metricsChart { width: 100% !important; height: 100% !important; }
-
-/* Buttons toolbar spacing */
+/* Buttons */
 .dt-buttons { margin-bottom: 10px; }
+.dt-button { border-radius: 8px !important; }
+
+table.dataTable tbody tr>.dtfc-fixed-left, table.dataTable tbody tr>.dtfc-fixed-right,
+table.dataTable thead tr >.dtfc-fixed-left
+{
+    z-index: 1;
+    background-color: transparent!important;
+}
+
+/* ===========================
+   FIX: DataTables Column Dropdown
+   =========================== */
+
+/* Container for dropdown */
+div.dt-button-collection {
+    background: var(--card) !important;    /* vidi se u oba moda */
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    padding: 8px !important;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.15) !important;
+    color: var(--text) !important;         /* TAMNI tekst */
+}
+
+/* Items inside dropdown */
+div.dt-button-collection button.dt-button {
+    background: none !important;
+    color: var(--text) !important;         /* tekst vidljiv */
+    border: none !important;
+    text-align: left !important;
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+    width: 100% !important;
+}
+
+/* Hover state */
+div.dt-button-collection button.dt-button:hover {
+    background: rgba(0,0,0,0.05) !important;
+    color: var(--dark) !important;
+}
+
+/* Dark mode fix */
+[data-theme="dark"] div.dt-button-collection {
+    background: #1f2838 !important;
+    border-color: #2e3b54 !important;
+    color: #e7ecf3 !important;
+}
+
+[data-theme="dark"] div.dt-button-collection button.dt-button {
+    color: #e7ecf3 !important;
+}
+
+[data-theme="dark"] div.dt-button-collection button.dt-button:hover {
+    background: rgba(255,255,255,0.08) !important;
+    color: #fff !important;
+}

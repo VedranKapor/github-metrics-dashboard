@@ -1,132 +1,75 @@
-// $(document).ready(function () {
-
-//     $.get('github_metrics.csv', function (data) {
-
-//         // Parse CSV
-//         let rows = data.trim().split('\n');
-//         let headers = rows[0].split(',');
-
-//         let tableData = rows.slice(1).map(row => row.split(','));
-
-//         // Build dynamic DataTable
-//         $('#metricsTable').DataTable({
-//             data: tableData,
-//             columns: headers.map(h => ({ title: h })),
-//             pageLength: 25
-//         });
-
-//         // Extract chart data
-//         let repos = tableData.map(r => r[0]);      // repository column
-//         let stars = tableData.map(r => Number(r[5])); // stars column
-//         let forks = tableData.map(r => Number(r[6])); // forks column
-//         let downloads = tableData.map(r => Number(r[17])); // downloads
-
-//         // Render Chart
-//         new Chart(document.getElementById('metricsChart'), {
-//             type: 'bar',
-//             data: {
-//                 labels: repos,
-//                 datasets: [
-//                     {
-//                         label: 'Stars',
-//                         data: stars,
-//                         backgroundColor: '#3a3f51'
-//                     },
-//                     {
-//                         label: 'Forks',
-//                         data: forks,
-//                         backgroundColor: '#71a06a'
-//                     }
-//                     // ,
-//                     // {
-//                     //     label: 'Downloads',
-//                     //     data: downloads,
-//                     //     backgroundColor: '#58A4B0'
-//                     // }
-//                 ]
-//             },
-//             options: {
-//                 responsive: true,
-//                 maintainAspectRatio: false,
-//                 scales: {
-//                     x: { ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 } },
-//                     y: { beginAtZero: true }
-//                 }
-//             }
-//         });
-
-//     });
-
-// });
-
-
-// -------------------------------
-// Simple CSV parser that handles quoted fields with commas
-// (Keeps things dependency-free; if you prefer Papa Parse, we can swap it in.)
-// -------------------------------
+// ===================== SmartAdmin A2 Dashboard ===================== //
+// Robust CSV parser (quoted commas)
 function parseCSV(text) {
-  const rows = [];
-  let row = [];
-  let cur = '';
-  let inQuotes = false;
-
+  const rows = []; let row = []; let cur = ''; let inQuotes = false;
   for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const next = text[i + 1];
-
-    if (char === '"' && !inQuotes) {
-      inQuotes = true;
-      continue;
-    }
+    const char = text[i]; const next = text[i+1];
+    if (char === '"' && !inQuotes) { inQuotes = true; continue; }
     if (char === '"' && inQuotes) {
-      // Escaped quote
-      if (next === '"') {
-        cur += '"';
-        i++;
-        continue;
-      }
-      inQuotes = false;
-      continue;
+      if (next === '"') { cur += '"'; i++; continue; }
+      inQuotes = false; continue;
     }
-    if (char === ',' && !inQuotes) {
-      row.push(cur);
-      cur = '';
-      continue;
-    }
+    if (char === ',' && !inQuotes) { row.push(cur); cur = ''; continue; }
     if ((char === '\n' || char === '\r') && !inQuotes) {
-      if (cur.length || row.length) {
-        row.push(cur);
-        rows.push(row);
-        row = [];
-        cur = '';
-      }
-      // Skip \r\n pairs
-      if (char === '\r' && next === '\n') i++;
-      continue;
+      if (cur.length || row.length) { row.push(cur); rows.push(row); row = []; cur = ''; }
+      if (char === '\r' && next === '\n') i++; continue;
     }
     cur += char;
   }
-  if (cur.length || row.length) {
-    row.push(cur);
-    rows.push(row);
-  }
+  if (cur.length || row.length) { row.push(cur); rows.push(row); }
   return rows;
 }
 
-$(document).ready(function () {
-  // Load CSV
-  $.get('github_metrics.csv', function (data) {
-    // Parse CSV robustly (handles quoted commas)
-    const rows = parseCSV(data.trim());
-    if (!rows || rows.length < 2) {
-      console.error('CSV seems empty or malformed.');
-      return;
-    }
+// Normalize various repo inputs to { ownerRepo, url }
+function normalizeRepoRef(raw) {
+  if (!raw) return null; let s = String(raw).trim();
+  s = s.replace(/\"|\'|`/g,'').trim();
+  s = s.replace(/\.git$/i, '').replace(/\/+$/, '');
+  const full = s.match(/^https?:\/\/(?:www\.)?github\.com\/([^\/\s]+)\/([^\/\s]+)/i);
+  if (full) return { ownerRepo: `${full[1]}/${full[2]}`, url: `https://github.com/${full[1]}/${full[2]}` };
+  const path = s.match(/^(?:www\.)?github\.com\/([^\/\s]+)\/([^\/\s]+)/i);
+  if (path) return { ownerRepo: `${path[1]}/${path[2]}`, url: `https://github.com/${path[1]}/${path[2]}` };
+  const or = s.match(/^([^\/\s]+)\/([^\/\s]+)$/);
+  if (or) return { ownerRepo: `${or[1]}/${or[2]}`, url: `https://github.com/${or[1]}/${or[2]}` };
+  return null;
+}
 
+function prettyHeader(h) {
+  const map = {
+    open_prs: 'Open PRs',
+    closed_prs_last_30: 'Closed PRs (30d)',
+    merged_prs_last_30: 'Merged PRs (30d)',
+    contributors_total: 'Contributors (Total)',
+    contributors_active_30_days: 'Contributors Active (30d)',
+    repo_size_kb: 'Repo Size (KB)',
+    default_branch: 'Default Branch',
+    last_update: 'Last Update',
+    last_commit: 'Last Commit',
+    latest_release: 'Latest Release',
+    release_downloads: 'Release Downloads'
+  };
+  if (map[h]) return map[h];
+  return h.replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+$(document).ready(function(){
+  // Theme toggle
+  const savedTheme = localStorage.getItem('ccg-theme');
+  if (savedTheme === 'dark') document.body.setAttribute('data-theme','dark');
+  $('#themeToggle').on('click', ()=>{
+    const dark = document.body.getAttribute('data-theme') === 'dark';
+    document.body.setAttribute('data-theme', dark ? '' : 'dark');
+    localStorage.setItem('ccg-theme', dark ? 'light' : 'dark');
+  });
+
+  // Load CSV
+  $.get('github_metrics.csv', function(data){
+    const rows = parseCSV(data.trim());
+    if (!rows || rows.length < 2) { console.error('CSV empty or malformed'); return; }
     const headers = rows[0];
     const tableData = rows.slice(1);
 
-    // Column index map (must match your CSV header order)
+    // Column map (by header name)
     const COL = {
       repository: headers.indexOf('repository'),
       description: headers.indexOf('description'),
@@ -149,8 +92,15 @@ $(document).ready(function () {
       repo_size_kb: headers.indexOf('repo_size_kb')
     };
 
-    // Define default visible columns (Core view)
-    // Repo (always visible) + description, license, stars, forks, last_update
+    // KPI
+    const num = v => Number(v) || 0;
+    const totalStars = tableData.reduce((s,r)=> s + num(r[COL.stars]), 0);
+    const totalForks = tableData.reduce((s,r)=> s + num(r[COL.forks]), 0);
+    $('#kpiStars').text(totalStars.toLocaleString('bs-BA'));
+    $('#kpiForks').text(totalForks.toLocaleString('bs-BA'));
+    $('#kpiRepos').text(tableData.length.toLocaleString('bs-BA'));
+
+    // Default visible set
     const DEFAULT_VISIBLE = new Set([
       COL.description, COL.license, COL.stars, COL.forks, COL.last_update
     ]);
@@ -158,214 +108,83 @@ $(document).ready(function () {
     // Build DataTable
     const dt = $('#metricsTable').DataTable({
       data: tableData,
-      // columns: headers.map((h, i) => {
-      //   // Assign classes for styling (repo + description special)
-      //   const className =
-      //     i === COL.repository ? 'repo-cell noVis' :
-      //     i === COL.description ? 'desc-cell' : '';
-
-      //   return {
-      //     title: h,
-      //     className,
-      //     render: function (data, type, row) {
-      //       // Render repository as a GitHub link
-      //       if (i === COL.repository) {
-      //         const repo = row[COL.repository] || '';
-      //         const url = `https://github.com/${repo}`;
-      //         return `${url}${repo}</a>`;
-      //       }
-      //       return data;
-      //     }
-      //   };
-      // }),
-      columns: headers.map((h, i) => {
-        const className =
-          i === COL.repository ? 'repo-cell' :
-          i === COL.description ? 'desc-cell' :
-          '';
-
-        return {
-          title: h,
-          className,
-          render: function (data, type, row) {
-            // Repository column → clickable link
-            if (i === COL.repository) {
-              const repo = (row[COL.repository] || '').trim(); // e.g. "OSeMOSYS/MUIO"
-              if (!repo) return ''; // nothing to render
-
-              // Basic safety: only create link if it looks like "owner/repo"
-              const isOwnerRepo = repo.includes('/') && repo.split('/').length === 2;
-              const url = isOwnerRepo ? `https://github.com/${repo}` : null;
-
-              // When DataTables asks for 'display' render a link; for sort/filter return raw value
-              console.log('Rendering repo column:', repo, 'Link valid:', url, " type:", type)
-              ;
-              if (type === 'display' && url) {
-                console.log('Rendering link for', url, repo, '</a>');
-
-//                 <a href="https://github.com/OSeMOSYS/MUIO" target="_blank" rel="noopener noreferrer">OSeMOSYS/MUIO</a>
-
-                //return `${url}${repo}</a>`;
-                return `<a href="${url}" target="_blank" rel="noopener noreferrer">${repo}</a>`;  
-              }
-              return repo; // for sort/search/export
-            }
-            return data;
+      columns: headers.map((h,i)=>({
+        title: prettyHeader(h),
+        className: (
+          i === COL.repository ? 'repo-cell noVis' :
+          i === COL.description ? 'desc-cell' : ''
+        ),
+        render: function(data, type, row) {
+          // Repository link
+          if (i === COL.repository) {
+            const raw = (row[COL.repository] || '').trim();
+            const norm = normalizeRepoRef(raw) || { ownerRepo: raw, url: `https://github.com/${raw}` };
+            if (!norm.ownerRepo) return '';
+            return `<a href="${norm.url}" target="_blank" rel="noopener noreferrer">${norm.ownerRepo}</a>`;
           }
-        };
-      }),
-      // Toolbar with Column chooser + preset buttons
+          // Topics badges
+          if (i === COL.topics) {
+            const val = (row[i] || '').trim(); if (!val) return '';
+            // Split on | or ; or ,
+            const parts = val.split(/\||;|,/).map(s=>s.trim()).filter(Boolean);
+            if (!parts.length) return '';
+            return `<div class="badges">${parts.map(t=>`<span class="badge topic"><i class="fa fa-tag"></i>${t}</span>`).join('')}</div>`;
+          }
+          // License badge
+          if (i === COL.license) {
+            const lic = (row[i] || '').trim(); if (!lic) return '';
+            return `<span class="badge license"><i class="fa fa-scale-balanced"></i>${lic}</span>`;
+          }
+          return data;
+        }
+      })),
       dom: 'Bfrtip',
       buttons: [
-        {
-          extend: 'colvis',
-          text: 'Columns',
-          // prevent hiding the repository column
-          columns: ':not(.noVis)'
-        },
-        {
-          text: 'Core',
-          action: function () {
-            dt.columns().visible(false);
-            // Repo always on
-            dt.column(COL.repository).visible(true);
-            // Default visible set
-            DEFAULT_VISIBLE.forEach(c => dt.column(c).visible(true));
-          }
-        },
-        {
-          text: 'Activity',
-          action: function () {
-            dt.columns().visible(false);
-            [
-              COL.repository,
-              COL.watchers, COL.open_issues, COL.open_prs,
-              COL.closed_prs_30, COL.merged_prs_30, COL.last_commit, COL.last_update
-            ].forEach(c => dt.column(c).visible(true));
-          }
-        },
-        {
-          text: 'Contributors',
-          action: function () {
-            dt.columns().visible(false);
-            [COL.repository, COL.contributors_total, COL.contributors_active_30]
-              .forEach(c => dt.column(c).visible(true));
-          }
-        },
-        {
-          text: 'Releases',
-          action: function () {
-            dt.columns().visible(false);
-            [COL.repository, COL.latest_release, COL.release_downloads]
-              .forEach(c => dt.column(c).visible(true));
-          }
-        },
-        {
-          text: 'Show All',
-          action: function () {
-            dt.columns().visible(true);
-          }
-        }
+        { extend: 'colvis', text: 'Columns', columns: ':not(.noVis)' },
+        { text: 'Core', action: function(){ dt.columns().visible(false); dt.column(COL.repository).visible(true); DEFAULT_VISIBLE.forEach(c=> dt.column(c).visible(true)); } },
+        { text: 'Activity', action: function(){ dt.columns().visible(false); [COL.repository, COL.watchers, COL.open_issues, COL.open_prs, COL.closed_prs_30, COL.merged_prs_30, COL.last_commit, COL.last_update].forEach(c=> dt.column(c).visible(true)); } },
+        { text: 'Contributors', action: function(){ dt.columns().visible(false); [COL.repository, COL.contributors_total, COL.contributors_active_30].forEach(c=> dt.column(c).visible(true)); } },
+        { text: 'Releases', action: function(){ dt.columns().visible(false); [COL.repository, COL.latest_release, COL.release_downloads].forEach(c=> dt.column(c).visible(true)); } },
+        { text: 'Show All', action: function(){ dt.columns().visible(true); } }
       ],
-
-      // Remember column visibility between reloads
       stateSave: true,
-
-      // Table ergonomics
       pageLength: 25,
-      stripeClasses: ['even', 'odd'],
       autoWidth: false,
-
-      // Widths + numeric alignment
+      fixedHeader: true,
+      fixedColumns: { leftColumns: 1 },
       columnDefs: [
-        { targets: COL.repository, width: 560, className: 'repo-cell noVis' },
-        { targets: COL.description, width: 320, className: 'desc-cell' },
-        {
-          targets: [
-            COL.stars, COL.forks, COL.watchers, COL.open_issues, COL.open_prs,
-            COL.closed_prs_30, COL.merged_prs_30, COL.contributors_total,
-            COL.contributors_active_30, COL.release_downloads, COL.repo_size_kb
-          ],
-          className: 'dt-body-right'
-        }
+        { targets: COL.repository, width: 440,  className: 'repo-cell noVis'},
+        { targets: COL.description, width: 520, className: 'desc-cell' },
+        { targets: [COL.stars, COL.forks, COL.watchers, COL.open_issues, COL.open_prs, COL.closed_prs_30, COL.merged_prs_30, COL.contributors_total, COL.contributors_active_30, COL.release_downloads, COL.repo_size_kb], className: 'dt-body-right' }
       ]
     });
 
-    // Apply initial visibility AFTER dt exists (fixes "Cannot access 'dt' before initialization")
-    // dt.on('init', function () {
-    //   // Hide everything first (except repo)
-    //   dt.columns().every(function (idx) {
-    //     const isRepo = idx === COL.repository;
-    //     this.visible(isRepo || DEFAULT_VISIBLE.has(idx));
-    //   });
-    // });
+    // Move DT buttons into header toolbar
+    dt.buttons().container().appendTo('#toolbar .actions');
 
+    // Ensure initial visibility
+    dt.on('init', function(){
+      dt.columns().every(function(idx){
+        const isRepo = (idx === COL.repository);
+        this.visible(isRepo || DEFAULT_VISIBLE.has(idx));
+      });
+    });
 
-
-
-
-    // After DataTable is created:
-const repoColIdx = (typeof COL !== 'undefined' && COL.repository >= 0) ? COL.repository : 0;
-
-console.log('Repository column index:', repoColIdx);
-
-// dt.on('draw', function () {
-//   dt.column(repoColIdx, { page: 'current' }).nodes().each(function (cell) {
-//     const text = (cell.textContent || '').trim(); // e.g., "OSeMOSYS/MUIO"
-        
-//     if (!text) return;
-
-//     // Link only if it looks like "owner/repo"
-//     const ok = text.includes('/') && text.split('/').length === 2;
-
-//     console.log('Updated repo link for', text);
-//     console.log('Link valid:', ok);
-//     if (!ok) return;
-
-//     const url = `https://github.com/${text}`;
-//     // Write the actual <a> tag into the cell
-//     cell.innerHTML = `${url}${text}</a>`;
-
-//   });
-// });
-
-// Force a first pass
-dt.draw(false);
-
-
-
-
-
-
-    // ---------- Chart (Stars & Forks) ----------
-    const safeNum = (v) => {
-      const n = Number(v);
-      return Number.isFinite(n) ? n : 0;
-    };
-
+    // Chart
+    const safeNum = v => Number(v) || 0;
     const repos = tableData.map(r => r[COL.repository] || '');
     const stars = tableData.map(r => safeNum(r[COL.stars]));
     const forks = tableData.map(r => safeNum(r[COL.forks]));
-
     new Chart(document.getElementById('metricsChart'), {
       type: 'bar',
-      data: {
-        labels: repos,
-        datasets: [
-          { label: 'Stars', data: stars, backgroundColor: '#3A3F51' },
-          { label: 'Forks', data: forks, backgroundColor: '#71A06A' }
-        ]
-      },
+      data: { labels: repos, datasets: [
+        { label: 'Stars', data: stars, backgroundColor: '#3A3F51' },
+        { label: 'Forks', data: forks, backgroundColor: '#71A06A' }
+      ]},
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        scales: {
-          x: { ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 } },
-          y: { beginAtZero: true }
-        },
-        plugins: {
-          legend: { labels: { color: '#3A3F51' } }
-        }
+        scales: { x: { ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 } }, y: { beginAtZero: true } }
       }
     });
   });
