@@ -129,3 +129,10 @@ div.dt-button-collection button.dt-button:hover {
     background: rgba(255,255,255,0.08) !important;
     color: #fff !important;
 }
+
+/* Center all table cells by default */
+#metricsTable td,
+#metricsTable th {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
