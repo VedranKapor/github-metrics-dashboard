@@ -1,6 +1,6 @@
 repository,description,topics,default_branch,license,stars,forks,watchers,open_issues,open_prs,closed_prs_last_30,merged_prs_last_30,contributors_total,contributors_active_30_days,last_commit,last_update,latest_release,release_downloads,repo_size_kb
-OSeMOSYS/MUIO,,,master,Apache-2.0,21,28,2,49,24,0,0,4,9,2026-10-01T20:24:12Z,2026-10-01T20:26:12Z,v5.7,4173,153235
+OSeMOSYS/MUIO,,,master,Apache-2.0,21,28,2,49,24,0,0,4,9,2026-10-01T20:24:12Z,2026-10-01T20:26:12Z,v5.7,4183,153235
 FINPLAN-Model/FINPLAN-Code,,,main,BSD-3-Clause,3,3,0,1,0,0,0,3,0,2025-02-10T17:49:17Z,2025-07-12T10:42:21Z,,0,1835
 Model-for-Analysis-of-Energy-Demand/MAED-Code,Code for MAED,,main,BSD-3-Clause,15,4,1,0,0,0,0,3,1,2025-11-12T12:28:25Z,2026-09-29T09:03:47Z,,0,2758
-carderne/mosox,LP matrix generator for GMPL,,main,MIT,11,1,2,0,0,2,2,2,8,2026-10-03T13:53:05Z,2026-10-03T13:53:10Z,v0.6.3,112,4224
+carderne/mosox,LP matrix generator for GMPL,,main,MIT,11,1,2,0,0,2,2,2,9,2026-10-03T13:53:05Z,2026-10-03T13:53:10Z,v0.6.3,112,4224
 OSeMOSYS/otoole,OSeMOSYS Tools for Energy,"energy,energy-system,energy-system-modelling,osemosys",master,MIT,33,23,7,48,3,0,0,5,2,2024-11-15T22:12:13Z,2026-06-15T05:10:34Z,v1.1.5,0,3287
